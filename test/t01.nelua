@@ -28,6 +28,10 @@ puts(s21) -- outputs: hello
 function my_compiletime_function(str)
   print(str) -- print at compile time
 end
+
+-- Opens a file in append mode
+file = io.open("test/t01_comptime_logs.txt", "a")
+file:write('comptime\n')
 ]]
 
 -- call the function defined in the block above
