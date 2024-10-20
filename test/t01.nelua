@@ -22,3 +22,36 @@ end
 
 local s21 = tostring(21)
 puts(s21) -- outputs: hello
+
+-- this is a preprocessor code block
+##[[
+function my_compiletime_function(str)
+  print(str) -- print at compile time
+end
+]]
+
+-- call the function defined in the block above
+## my_compiletime_function('// hello from preprocessor')
+
+local function pow(x: auto, n: integer)
+## static_assert(x.type.is_scalar, 'cannot pow variable of type "%s"', x.type)
+## if x.type.is_integral then
+  -- x is an integral type (any unsigned/signed integer)
+  local r: #[x.type]# = 1
+  for i=1,n do
+    r = r * x
+  end
+  return r
+## elseif x.type.is_float then
+  -- x is a floating point type
+  return x ^ n
+## end
+end
+
+local a = pow(2, 2) -- use specialized implementation for integers
+local b = pow(2.0, 2) -- use pow implementation for floats
+print(a,b) -- outputs: 4 4.0
+
+-- uncommenting the following will trigger the compile error:
+--   error: cannot pow variable of type "string"
+--pow('a', 2)

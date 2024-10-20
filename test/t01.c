@@ -1,3 +1,4 @@
+// hello from preprocessor
 /* ------------------------------ DIRECTIVES -------------------------------- */
 /* Disable some warnings that the generated code can trigger. */
 #if defined(__clang__) && __clang_major__ >= 3
@@ -132,6 +133,7 @@ NELUA_STATIC_ASSERT(sizeof(void*) == 8 && NELUA_ALIGNOF(void*) == 8, "Nelua and 
 #endif
 /* Macro used to import C functions. */
 #define NELUA_CIMPORT NELUA_EXTERN
+#include <math.h>
 /* ------------------------------ DECLARATIONS ------------------------------ */
 static NELUA_INLINE void nelua_memory_copy(void* dest, void* src, uintptr_t n);
 static NELUA_INLINE void nelua_write_stderr(const char* msg, uintptr_t len, bool flush);
@@ -177,6 +179,11 @@ static void nelua_print_2(bool a1, int64_t a2);
 NELUA_CIMPORT int puts(const char* s);
 static nlstring test_t01_s21;
 static NELUA_INLINE char* nelua_assert_string2cstring(nlstring s);
+static int64_t test_t01_pow_1(int64_t x, int64_t n);
+static double test_t01_pow_2(double x, int64_t n);
+static int64_t test_t01_a_1;
+static double test_t01_b_1;
+static void nelua_print_3(int64_t a1, double a2);
 static int nelua_main(int argc, char** argv);
 /* ------------------------------ DEFINITIONS ------------------------------- */
 void nelua_write_stderr(const char* msg, uintptr_t len, bool flush) {
@@ -320,6 +327,40 @@ char* nelua_assert_string2cstring(nlstring s) {
   }
   return (char*)s.data;
 }
+int64_t test_t01_pow_1(int64_t x, int64_t n) {
+  int64_t r = 1;
+  for(int64_t i = 1, _end = n; i <= _end; i += 1) {
+    r = (r * x);
+  }
+  return r;
+}
+double test_t01_pow_2(double x, int64_t n) {
+  return pow(x, n);
+}
+void nelua_print_3(int64_t a1, double a2) {
+  int len;
+  bool fractnum;
+  char buff[48];
+  buff[sizeof(buff)-1] = 0;
+  fprintf(stdout, "%lli", (long long)a1);
+  fputs("	", stdout);
+  len = snprintf(buff, sizeof(buff)-1, "%.14g", a2);
+  fractnum = false;
+  for(int i=0;i<len && buff[i] != 0;++i) {
+    if(!((buff[i] >= '0' && buff[i] <= '9') || buff[i] == '-')) {
+      fractnum = true;
+      break;
+    }
+  }
+  if(!fractnum && len > 0 && len + 2 < (int)sizeof(buff)) {
+    buff[len] = '.';
+    buff[len+1] = '0';
+    len = len + 2;
+  }
+  fwrite(buff, 1, len, stdout);
+  fputs("\n", stdout);
+  fflush(stdout);
+}
 int nelua_main(int argc, char** argv) {
   {
     nelua_print_1(((nlstring){(uint8_t*)"## Memory management", 20}));
@@ -334,6 +375,9 @@ int nelua_main(int argc, char** argv) {
   nelua_print_2(test_t01_a, test_t01_b);
   test_t01_s21 = nelua_tostring_1(21);
   puts(nelua_assert_string2cstring(test_t01_s21));
+  test_t01_a_1 = test_t01_pow_1(2, 2);
+  test_t01_b_1 = test_t01_pow_2(2.0, 2);
+  nelua_print_3(test_t01_a_1, test_t01_b_1);
   return 0;
 }
 int main(int argc, char** argv) {
