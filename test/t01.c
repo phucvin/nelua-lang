@@ -164,6 +164,14 @@ static void nelua_nlstring_destroy(nlstring_ptr self);
 static nlstring nelua_nlstring_copy(nlstring s);
 static nlstring nelua_tostring_1(int64_t x);
 static void nelua_print_1(nlstring a1);
+typedef struct nlmulret_nlboolean_nlint64 {
+  bool r1;
+  int64_t r2;
+} nlmulret_nlboolean_nlint64;
+static nlmulret_nlboolean_nlint64 test_t01_get_multiple(void);
+static bool test_t01_a;
+static int64_t test_t01_b;
+static void nelua_print_2(bool a1, int64_t a2);
 static int nelua_main(int argc, char** argv);
 /* ------------------------------ DEFINITIONS ------------------------------- */
 void nelua_write_stderr(const char* msg, uintptr_t len, bool flush) {
@@ -288,6 +296,16 @@ void nelua_print_1(nlstring a1) {
   fputs("\n", stdout);
   fflush(stdout);
 }
+nlmulret_nlboolean_nlint64 test_t01_get_multiple(void) {
+  return (nlmulret_nlboolean_nlint64){false, 1};
+}
+void nelua_print_2(bool a1, int64_t a2) {
+  fputs(a1 ? "true" : "false", stdout);
+  fputs("	", stdout);
+  fprintf(stdout, "%lli", (long long)a2);
+  fputs("\n", stdout);
+  fflush(stdout);
+}
 int nelua_main(int argc, char** argv) {
   {
     nelua_print_1(((nlstring){(uint8_t*)"## Memory management", 20}));
@@ -296,6 +314,10 @@ int nelua_main(int argc, char** argv) {
     nelua_nlstring_destroy((&str));
     nelua_print_1(str);
   }
+  nlmulret_nlboolean_nlint64 _asgnret_1 = test_t01_get_multiple();
+  test_t01_a = _asgnret_1.r1;
+  test_t01_b = _asgnret_1.r2;
+  nelua_print_2(test_t01_a, test_t01_b);
   return 0;
 }
 int main(int argc, char** argv) {

@@ -7,3 +7,10 @@ do print '## Memory management'
   str:destroy() -- deallocates the string
   print(str) -- the string was destroyed and is now empty, outputs nothing
 end
+
+local function get_multiple(): (boolean, integer)
+  return false, 1
+end
+
+local a, b = get_multiple()
+print(a,b) -- outputs: false 1
