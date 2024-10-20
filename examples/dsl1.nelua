@@ -111,7 +111,7 @@ print 'Hello from Nelua!'
   a
 )
 (let n (fib 10))
-(print (.. "Fib 10 is " n))
+(print n)
 ]]
 
 print 'Hello from Nelua again!'
