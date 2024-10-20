@@ -1,0 +1,9 @@
+## pragmas.nogc = true
+require 'string'
+
+do print '## Memory management'
+  local str = tostring(1) -- tostring needs to allocates a new string
+  print(str) -- outputs: 1
+  str:destroy() -- deallocates the string
+  print(str) -- the string was destroyed and is now empty, outputs nothing
+end
