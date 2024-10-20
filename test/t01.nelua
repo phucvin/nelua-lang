@@ -14,3 +14,11 @@ end
 
 local a, b = get_multiple()
 print(a,b) -- outputs: false 1
+
+-- import "puts" from C library
+local function puts(s: cstring <const>): cint <cimport>
+  -- cannot have any code here, because this function is imported
+end
+
+local s21 = tostring(21)
+puts(s21) -- outputs: hello

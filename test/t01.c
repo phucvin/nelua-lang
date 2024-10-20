@@ -130,6 +130,8 @@ NELUA_STATIC_ASSERT(sizeof(void*) == 8 && NELUA_ALIGNOF(void*) == 8, "Nelua and 
 #else
   #define NELUA_MAYALIAS
 #endif
+/* Macro used to import C functions. */
+#define NELUA_CIMPORT NELUA_EXTERN
 /* ------------------------------ DECLARATIONS ------------------------------ */
 static NELUA_INLINE void nelua_memory_copy(void* dest, void* src, uintptr_t n);
 static NELUA_INLINE void nelua_write_stderr(const char* msg, uintptr_t len, bool flush);
@@ -172,6 +174,9 @@ static nlmulret_nlboolean_nlint64 test_t01_get_multiple(void);
 static bool test_t01_a;
 static int64_t test_t01_b;
 static void nelua_print_2(bool a1, int64_t a2);
+NELUA_CIMPORT int puts(const char* s);
+static nlstring test_t01_s21;
+static NELUA_INLINE char* nelua_assert_string2cstring(nlstring s);
 static int nelua_main(int argc, char** argv);
 /* ------------------------------ DEFINITIONS ------------------------------- */
 void nelua_write_stderr(const char* msg, uintptr_t len, bool flush) {
@@ -306,6 +311,15 @@ void nelua_print_2(bool a1, int64_t a2) {
   fputs("\n", stdout);
   fflush(stdout);
 }
+char* nelua_assert_string2cstring(nlstring s) {
+  if(s.size == 0) {
+    return (char*)"";
+  }
+  if(NELUA_UNLIKELY(s.data[s.size]) != 0) {
+    nelua_panic_cstring("attempt to convert a non null terminated string to cstring");
+  }
+  return (char*)s.data;
+}
 int nelua_main(int argc, char** argv) {
   {
     nelua_print_1(((nlstring){(uint8_t*)"## Memory management", 20}));
@@ -318,6 +332,8 @@ int nelua_main(int argc, char** argv) {
   test_t01_a = _asgnret_1.r1;
   test_t01_b = _asgnret_1.r2;
   nelua_print_2(test_t01_a, test_t01_b);
+  test_t01_s21 = nelua_tostring_1(21);
+  puts(nelua_assert_string2cstring(test_t01_s21));
   return 0;
 }
 int main(int argc, char** argv) {
